@@ -63,7 +63,7 @@
 
 		      	html = ""
 		      	for (var meme of data.data.memes) {
-		      		html += `<div class="col-3"><img src="${meme.url}" class="meme-img"/><h3 class="meme-name">${meme.name}</h3></div>`
+		      		html += `<div class="col-4"><img src="${meme.url}" class="meme-img"/><h3 class="meme-name">${meme.name}</h3></div>`
 		      	}
 
 		      	document.getElementById("Memes").innerHTML = DOMPurify.sanitize(html)
