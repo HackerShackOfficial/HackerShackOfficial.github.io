@@ -2,3 +2,17 @@ body {
     margin: 60px auto;
     width: 70%;
 }
+
+.meme-img {
+    width: 300px;
+    height: 300px;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.meme-name {
+	width: 250px;
+	text-align: center;
+}

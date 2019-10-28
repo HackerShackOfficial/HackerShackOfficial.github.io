@@ -1,0 +1,79 @@
+<html>
+
+<head>
+	<title>Hacker Shack github.io</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.3/purify.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+<body>
+	
+	<h1>Hacker Shack Chatbot Meme Viewer</h1>
+	<h2>How to use the meme command</h2>
+	<p>Select a meme template from the available ones below and construct one with a chat message by using the following commands.</p>
+	
+	<ul>
+		<li>MEME_NAME = Meme's name found below the image</li>
+		<li>TOP_TEXT = The text on the top of the meme</li>
+		<li>BOTTOM_TEXT = The text on the bottom of the meme</li>
+	</ul>
+
+	<h4>Display a meme url in chat</h4>
+	<p><code>!meme | MEME_NAME | TOP_TEXT | BOTTOM_TEXT</code></p>
+	<h4>Display a meme on the livestream video</h4>
+	<p><code>!sm | MEME_NAME | TOP_TEXT | BOTTOM_TEXT</code></p>
+	<br/>
+	
+	<h2 style="text-align: center;">Available Memes</h2>
+	<hr/>
+
+	<div class="alert alert-danger" role="alert" style="display: none" id="error-alert">
+  		<strong>Error: </strong><span id="error-span"></span>
+	</div>
+
+	<div id="Memes" class="row"/>
+</body>
+
+<script type="text/javascript">
+	function showError(msg) {
+		alert = document.getElementById("error-alert")
+		msgSpan = document.getElementById("error-span")
+		msgSpan.textContent = msg
+		alert.style.display = "block"
+		console.log(msg);
+	}
+
+	fetch("https://api.imgflip.com/get_memes")
+		.then(
+		    function(response) {
+		      if (response.status !== 200) {
+		        showError('Looks like there was a problem. Status Code: ' +
+		          response.status)
+		        return;
+		      }
+
+		      response.json().then(function(data) {
+
+		      	if (!data.success) {
+		      		showError('API sent bad response')
+			        return;
+		      	}
+
+		      	html = ""
+		      	for (var meme of data.data.memes) {
+		      		html += `<div class="col-3"><img src="${meme.url}" class="meme-img"/><h3 class="meme-name">${meme.name}</h3></div>`
+		      	}
+
+		      	document.getElementById("Memes").innerHTML = DOMPurify.sanitize(html)
+
+		      });
+		    }
+		)
+		.catch(function(err) {
+			showError(`Fetch error: ${err}`)
+		});
+	</script>
+
+</html>
