@@ -6,6 +6,7 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.3/purify.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="/css/main.css">
+	<link rel="stylesheet" type="text/css" href="/css/meme-viewer.css">
 </head>
 
 <body>
@@ -33,16 +34,37 @@
   		<strong>Error: </strong><span id="error-span"></span>
 	</div>
 
-	<div id="Memes" class="row"/>
+	<div class="loader" id="meme-loader">Loading...</div>
+
+	<div id="memes" class="row"/>
 </body>
 
 <script type="text/javascript">
+	var pageLoadStart = new Date();
+
 	function showError(msg) {
 		alert = document.getElementById("error-alert")
 		msgSpan = document.getElementById("error-span")
 		msgSpan.textContent = msg
 		alert.style.display = "block"
 		console.log(msg);
+	}
+
+	function showMemes(data, loadingStart, loadingEnd) {
+      	var deltaSeconds = (loadingEnd.getTime() - loadingStart.getTime()) / 1000;
+
+      	// Set load minimum to 2 seconds 
+      	var extraLoadingTime = deltaSeconds < 2000 ? 2000 - deltaSeconds : 0
+      	
+      	setTimeout(function () {
+	      	html = ""
+	      	for (var meme of data.data.memes) {
+	      		html += `<div class="col-4"><div class="meme-container"><div class="meme-content"><img src="${meme.url}" class="meme-img"/></div></div><h3 class="meme-name">${meme.name}</h3></div>`
+	      	}
+
+	      	document.getElementById("meme-loader").style.display = "none"
+	      	document.getElementById("memes").innerHTML = DOMPurify.sanitize(html)
+      	}, extraLoadingTime);
 	}
 
 	fetch("https://api.imgflip.com/get_memes")
@@ -61,13 +83,8 @@
 			        return;
 		      	}
 
-		      	html = ""
-		      	for (var meme of data.data.memes) {
-		      		html += `<div class="col-4"><img src="${meme.url}" class="meme-img"/><h3 class="meme-name">${meme.name}</h3></div>`
-		      	}
-
-		      	document.getElementById("Memes").innerHTML = DOMPurify.sanitize(html)
-
+		      	var finishedLoading = new Date();
+		      	showMemes(data, pageLoadStart, finishedLoading)
 		      });
 		    }
 		)
